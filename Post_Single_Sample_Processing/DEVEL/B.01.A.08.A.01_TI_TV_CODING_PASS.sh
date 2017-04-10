@@ -1,0 +1,26 @@
+#$ -S /bin/bash
+#$ -q rnd.q,test.q,prod.q
+#$ -cwd
+#$ -V
+#$ -p -1000
+
+set
+
+SAMTOOLS_DIR=$1
+CORE_PATH=$2
+PROJECT=$3
+SM_TAG=$4
+
+RIS_ID=${SM_TAG%@*}
+BARCODE_2D=${SM_TAG#*@}
+
+START_TI_TV_CODING_PASS=`date '+%s'`
+
+# TI/TV WHOLE GENOME ALL
+
+$SAMTOOLS_DIR/bcftools/vcfutils.pl qstats $CORE_PATH/$PROJECT/SNV/SINGLE/CODING/PASS/$SM_TAG".CODING.SNV.PASS.vcf" \
+>| $CORE_PATH/$PROJECT/REPORTS/TI_TV/CODING/$SM_TAG"_All_titv.txt"
+
+END_TI_TV_CODING_PASS=`date '+%s'`
+
+echo 'TI_TV_CODING_PASS,B.01.A.08.A.01,'$START_TI_TV_CODING_PASS','$END_TI_TV_CODING_PASS >> $CORE_PATH/$PROJECT/REPORTS/run_times.csv

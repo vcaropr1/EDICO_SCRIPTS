@@ -1,0 +1,30 @@
+#$ -S /bin/bash
+#$ -q rnd.q,test.q,prod.q
+#$ -cwd
+#$ -V
+#$ -p -1000
+
+set
+
+TABIX_DIR=$1
+CORE_PATH=$2
+PROJECT=$3
+SM_TAG=$4
+
+RIS_ID=${SM_TAG%@*}
+BARCODE_2D=${SM_TAG#*@}
+
+START_INDEX_VCF=`date '+%s'`
+
+# INDEX THE SINGLE VCF
+
+$TABIX_DIR/bgzip -c $CORE_PATH/$PROJECT/VCF/SINGLE/WHOLE_GENOME/$SM_TAG".WHOLE.GENOME.vcf" \
+>| $CORE_PATH/$PROJECT/VCF/SINGLE/WHOLE_GENOME/$SM_TAG".WHOLE.GENOME.vcf.gz"
+
+$TABIX_DIR/tabix -f -p vcf $CORE_PATH/$PROJECT/VCF/SINGLE/WHOLE_GENOME/$SM_TAG".WHOLE.GENOME.vcf.gz"
+
+
+END_INDEX_VCF=`date '+%s'`
+
+echo 'INDEX_VCF,B.01-A.01,'$START_INDEX_VCF','$END_INDEX_VCF >> $CORE_PATH/$PROJECT/REPORTS/run_times.csv
+
